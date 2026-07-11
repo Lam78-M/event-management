@@ -1,20 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { FiMail, FiLock, FiUser, FiUserPlus, FiImage } from "react-icons/fi";
+import { FiMail, FiLock, FiUser, FiUserPlus, FiImage, FiShield } from "react-icons/fi";
 import { FaGoogle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
+import Link from "next/link"; // ⚡ Lucide error fix: Next.js standard link mapping reference import text layout update code format!
 
 export default function RegisterPage() {
+  const [role, setRole] = useState<"user" | "organizer" | "admin">("user"); // Default user layout set safe logic text bindings string parameters
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [imageUrl, setImageUrl] = useState(""); // Image link state
+  const [imageUrl, setImageUrl] = useState(""); 
   const [loading, setLoading] = useState(false);
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,17 +32,33 @@ export default function RegisterPage() {
 
     setLoading(true);
 
-    // Dynamic sign up with dynamic profile avatar
+    // Dynamic sign up data mapping pipelines
+// Inside handleFormSubmit trigger matrix mapping client payload setup:
     await authClient.signUp.email({
-      email,
+      email: email.trim().toLowerCase(),
       password,
       name,
-      image: imageUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb", // fallback if empty
+      image: imageUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+      
+      // 🌟 MAXIMUM STRICT SOLUTION FOR BETTER AUTH DYNAMIC FIELDS SCHEMA BYPASS FRONTEND TYPE CHECK:
+      ...({
+        role: role
+     } as Record<string, unknown>),
+
       fetchOptions: {
         onResponse: () => setLoading(false),
         onSuccess: () => {
-          toast.success("Account Created Successfully! 🚀");
-          router.push("/");
+          toast.success(`Registered successfully as ${role}! 🚀`);
+          
+          // DYNAMIC NAVIGATION SWITCH LOGIC LAYER BASED ON USER ROLES CHOICE:
+          if (role === "admin") {
+            router.push("/admin/dashboard");
+          } else if (role === "organizer") {
+            router.push("/organizer/dashboard");
+          } else {
+            router.push("/dashboard/users"); 
+          }
+          
           router.refresh();
         },
         onError: (ctx) => {
@@ -55,7 +72,7 @@ export default function RegisterPage() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/"
+        callbackURL: role === "admin" ? "/admin/dashboard" : role === "organizer" ? "/organizer/dashboard" : "/dashboard"
       });
     } catch (err) {
       toast.error("Google registration failed! 🌐");
@@ -65,9 +82,27 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-brand-ice/30 via-white to-brand-light/10 px-4 pt-24 pb-12">
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-white border border-brand-ice/60 rounded-3xl shadow-xl p-8 space-y-5">
+        
         <div className="text-center space-y-1.5">
           <h2 className="text-3xl font-black text-brand-dark tracking-tight">Create Account</h2>
           <p className="text-sm text-gray-500">Register as attendee or publish global events</p>
+        </div>
+
+        {/* 🌟 PREMIUM ROLE SELECTOR TABS COMPONENT CONFIG */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-black text-gray-600 uppercase">Select Platform Role</label>
+          <div className="grid grid-cols-3 gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200/40">
+            {(["user", "organizer", "admin"] as const).map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setRole(r)}
+                className={`py-2 text-xs font-black rounded-lg uppercase tracking-wider transition-all ${role === r ? "bg-gradient-to-r from-brand-dark to-brand-primary text-white shadow-md" : "text-slate-500 hover:text-slate-800"}`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Google Registration Trigger */}
@@ -111,7 +146,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* New Image Link Input Field */}
           <div>
             <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Profile Image URL (Optional)</label>
             <div className="relative">
@@ -121,11 +155,15 @@ export default function RegisterPage() {
           </div>
 
           <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 font-bold bg-gradient-to-r from-brand-dark to-brand-primary text-white py-3.5 rounded-xl shadow-lg transition-all text-sm mt-2 disabled:opacity-50">
-            <span>{loading ? "Registering..." : "Register Platform"}</span>
+            <span>{loading ? "Registering..." : `Register as ${role}`}</span>
             <FiUserPlus className="w-4 h-4" />
           </button>
         </form>
-        <p className="text-center text-xs font-semibold text-gray-500">Already have an account? <Link href="/login" className="text-brand-primary font-black hover:underline ml-1">Log In</Link></p>
+        
+        <p className="text-center text-xs font-semibold text-gray-500">
+          Already have an account? 
+          <Link href="/login" className="text-brand-primary font-black hover:underline ml-1">Log In</Link>
+        </p>
       </motion.div>
     </div>
   );

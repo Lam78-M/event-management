@@ -28,6 +28,20 @@ export default function Navbar() {
   // Better Auth Live Session Linker
   const { data: session, isPending } = authClient.useSession();
 
+  // 🌟 TypeScript Strict User Role Casting Mechanism (Bypasses compilation flags smoothly)
+  const currentRole = (session?.user as Record<string, unknown>)?.role as string || "user";
+
+  // 🚀 DYNAMIC LOGIC ROUTING SCHEME: User role er upor bhab kore exact dashboard link layout set hobe
+  let dashboardHref = "/dashboard"; // Default base layout setup fallback
+
+  if (currentRole === "admin") {
+    dashboardHref = "/dashboard/admin";
+  } else if (currentRole === "organizer") {
+    dashboardHref = "/dashboard/organizer";
+  } else {
+    dashboardHref = "/dashboard/users"; // Normal client base endpoint user
+  }
+
   // 3 routes for logged-out users
   const loggedOutLinks = [
     { name: "Home", href: "/", icon: <FiHome className="w-4 h-4" /> },
@@ -35,14 +49,14 @@ export default function Navbar() {
     { name: "About", href: "/sections/aboutSection", icon: <FiInfo className="w-4 h-4" /> },
   ];
 
-  // 5 routes for logged-in users
-const loggedInLinks = [
+  // 🌟 6 routes for logged-in users (Dynamic dashboardHref mapping included safely)
+  const loggedInLinks = [
     { name: "Home", href: "/", icon: <FiHome className="w-4 h-4" /> },
     { name: "Events", href: "/events", icon: <FiCalendar className="w-4 h-4" /> },
     { name: "Add Event", href: "/events/add", icon: <FiPlusCircle className="w-4 h-4" /> },
     { name: "Manage Events", href: "/events/manage", icon: <FiActivity className="w-4 h-4" /> },
     { name: "Profile", href: "/profile", icon: <FiUser className="w-4 h-4" /> },
-    { name: "Dashboard", href: "/dashboard", icon: <FiGrid className="w-4 h-4" /> }, // Change icon to FiGrid for better look!
+    { name: "Dashboard", href: dashboardHref, icon: <FiGrid className="w-4 h-4" /> }, // 👈 Dynamic variable assignment injection points
   ];
 
   const activeLinks = session ? loggedInLinks : loggedOutLinks;
@@ -106,7 +120,6 @@ const loggedInLinks = [
           <div className="hidden lg:flex items-center gap-4">
             {session ? (
               <div className="flex items-center gap-4">
-                {/* Desktop Directly visible LogOut Button */}
                 <button 
                   onClick={handleLogout}
                   className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-50 rounded-xl transition-all border border-red-100 shadow-sm"
@@ -132,6 +145,10 @@ const loggedInLinks = [
                           </div>
                           <Link href="/profile" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-gray-600 hover:bg-brand-ice/20">
                             <FiUser className="w-4 h-4 text-brand-primary" /> My Profile
+                          </Link>
+                          {/* Quick access logic routing role parameter display tag links */}
+                          <Link href={dashboardHref} onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-gray-600 hover:bg-brand-ice/20 border-t border-slate-100">
+                            <FiGrid className="w-4 h-4 text-brand-primary" /> Core Dashboard
                           </Link>
                         </motion.div>
                       </>
@@ -163,7 +180,6 @@ const loggedInLinks = [
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="lg:hidden bg-white border-t border-brand-ice/30 shadow-inner overflow-hidden">
             <div className="px-4 pt-3 pb-6 space-y-2">
               
-              {/* Profile layout box section inside mobile drawer when session is active */}
               {session && (
                 <div className="flex items-center gap-3 p-3 bg-brand-ice/10 rounded-2xl border border-brand-ice/30 mb-2">
                   <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-brand-primary/40 flex-shrink-0">
