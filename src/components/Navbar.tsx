@@ -45,17 +45,17 @@ export default function Navbar() {
   // 3 routes for logged-out users
   const loggedOutLinks = [
     { name: "Home", href: "/", icon: <FiHome className="w-4 h-4" /> },
-    { name: "Events", href: "/events", icon: <FiCalendar className="w-4 h-4" /> },
+    { name: "Events", href: "/eventManage", icon: <FiCalendar className="w-4 h-4" /> },
     { name: "About", href: "/sections/aboutSection", icon: <FiInfo className="w-4 h-4" /> },
   ];
 
   // 🌟 6 routes for logged-in users (Dynamic dashboardHref mapping included safely)
   const loggedInLinks = [
     { name: "Home", href: "/", icon: <FiHome className="w-4 h-4" /> },
-    { name: "Events", href: "/events", icon: <FiCalendar className="w-4 h-4" /> },
-    { name: "Add Event", href: "/events/add", icon: <FiPlusCircle className="w-4 h-4" /> },
-    { name: "Manage Events", href: "/events/manage", icon: <FiActivity className="w-4 h-4" /> },
-    { name: "Profile", href: "/profile", icon: <FiUser className="w-4 h-4" /> },
+    { name: "Events", href: "/eventManage", icon: <FiCalendar className="w-4 h-4" /> },
+    { name: "Categories", href: "/categories", icon: <FiPlusCircle className="w-4 h-4" /> },
+    { name: "About-Us", href: "/about", icon: <FiActivity className="w-4 h-4" /> },
+    { name: "Contact", href: "/contact", icon: <FiUser className="w-4 h-4" /> },
     { name: "Dashboard", href: dashboardHref, icon: <FiGrid className="w-4 h-4" /> }, // 👈 Dynamic variable assignment injection points
   ];
 

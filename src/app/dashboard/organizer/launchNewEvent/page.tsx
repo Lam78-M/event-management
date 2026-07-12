@@ -6,8 +6,10 @@ import {
   Calendar, 
   LayoutSideContentLeft, 
   Envelope, 
+  Picture // 📸 Image/Logo representation context icon
 } from "@gravity-ui/icons";
 import { Button } from "@heroui/react";
+import { toast } from "react-toastify"; // 🎯 Toast functionality added
 
 // Framer Motion Animation Variants for Content Nodes
 const formSectionVariants = {
@@ -30,24 +32,44 @@ export default function CreateEventForm() {
     location: "",
     tickets: "",
     price: "",
-    description: ""
+    description: "",
+    image: "" // 🎯 1. Image Base64 data string matrix initialization
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // 🎯 2. Local dynamic image compiler conversion pipeline
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB safety limit
+        toast.error("Image too large! Keep it below 5MB threshold.");
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setFormData({ ...formData, image: reader.result as string });
+        toast.success("Image banner buffered successfully!");
+      };
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitStatus(null);
+    
+    // 🎯 3. Standard Toastify Loader instance stream
+    const toastId = toast.loading("Deploying new event payload timeline structure...");
     
     try {
       // 🚀 BACKEND PIPELINE COUPLING: Direct full REST API request method logic channel
-      const response = await fetch("/api/events/create", {
+      const response = await fetch("http://localhost:5000/api/eventmanage", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,14 +78,16 @@ export default function CreateEventForm() {
       });
 
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || "Something went wrong during instance provisioning.");
       }
 
-      setSubmitStatus({
+      // Update loader to success state
+      toast.update(toastId, {
+        render: "🎉 Event launched successfully on the global stream matrix!",
         type: "success",
-        message: "🎉 Event launched successfully on the global stream matrix!"
+        isLoading: false,
+        autoClose: 3000,
       });
       
       // Clear state data layout forms fields
@@ -76,13 +100,17 @@ export default function CreateEventForm() {
         location: "",
         tickets: "",
         price: "",
-        description: ""
+        description: "",
+        image: "" // Clear output image placeholder
       });
 
     } catch (error: any) {
-      setSubmitStatus({
+      // Update loader to error state
+      toast.update(toastId, {
+        render: error.message || "Failed to establish integration synchronization network stream.",
         type: "error",
-        message: error.message || "Failed to establish integration synchronization network stream."
+        isLoading: false,
+        autoClose: 4000,
       });
     } finally {
       setIsSubmitting(false);
@@ -114,24 +142,6 @@ export default function CreateEventForm() {
             Deploy your instance to the global timeline framework. Fill up metadata routing attributes below.
           </p>
         </motion.div>
-
-        {/* Status Notification Overlay Panel */}
-        <AnimatePresence mode="wait">
-          {submitStatus && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className={`p-4 rounded-xl text-xs sm:text-sm font-bold border mb-6 ${
-                submitStatus.type === "success" 
-                  ? "bg-emerald-50 border-emerald-200 text-emerald-700" 
-                  : "bg-rose-50 border-rose-200 text-rose-700"
-              }`}
-            >
-              {submitStatus.message}
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Main Interactive Form Component */}
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -190,9 +200,38 @@ export default function CreateEventForm() {
             </div>
           </motion.div>
 
-          {/* 2. TIMELINE AND GEOLOCATION CONFIGURATION MATRIX */}
+          {/* 🎯 IMAGE UPLOAD CONTAINER SECTION (INTEGRATED AS STEP 1.5) */}
           <motion.div 
             custom={1} variants={formSectionVariants} initial="hidden" animate="visible"
+            whileHover={{ y: -2 }}
+            className="bg-slate-50/50 backdrop-blur-md p-5 md:p-6 rounded-2xl border border-[#C4E2F5]/60 shadow-sm space-y-4 transition-shadow hover:shadow-md"
+          >
+            <h3 className="text-sm font-black text-[#2C5EAD] uppercase tracking-wider flex items-center gap-2">
+              <Picture className="text-[#1591DC]" /> Event Graphic Asset / Logo
+            </h3>
+            
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#2C5EAD] uppercase tracking-wide block">Select Attachment</label>
+              <input 
+                type="file" 
+                accept="image/*"
+                required
+                onChange={handleImageChange}
+                className="w-full px-4 py-2.5 bg-white border border-[#C4E2F5] rounded-xl text-sm font-medium focus:outline-none file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#C4E2F5]/40 file:text-[#2C5EAD] hover:file:bg-[#C4E2F5]/70 text-slate-600 cursor-pointer"
+              />
+              
+              {/* Media layout visual validation wrapper */}
+              {formData.image && (
+                <div className="mt-4 border rounded-xl overflow-hidden max-h-40 w-full max-w-xs relative bg-slate-100 flex items-center justify-center shadow-inner">
+                  <img src={formData.image} alt="Logo/Banner Stream Matrix" className="object-cover max-h-40 w-full" />
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* 2. TIMELINE AND GEOLOCATION CONFIGURATION MATRIX */}
+          <motion.div 
+            custom={2} variants={formSectionVariants} initial="hidden" animate="visible"
             whileHover={{ y: -2 }}
             className="bg-slate-50/50 backdrop-blur-md p-5 md:p-6 rounded-2xl border border-[#C4E2F5]/60 shadow-sm space-y-4 transition-shadow hover:shadow-md"
           >
@@ -239,7 +278,7 @@ export default function CreateEventForm() {
 
           {/* 3. CONTENT MARKDOWN CONTEXT AREA */}
           <motion.div 
-            custom={2} variants={formSectionVariants} initial="hidden" animate="visible"
+            custom={3} variants={formSectionVariants} initial="hidden" animate="visible"
             whileHover={{ y: -2 }}
             className="bg-slate-50/50 backdrop-blur-md p-5 md:p-6 rounded-2xl border border-[#C4E2F5]/60 shadow-sm space-y-4 transition-shadow hover:shadow-md"
           >
@@ -260,7 +299,6 @@ export default function CreateEventForm() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
             className="pt-2 flex justify-end"
           >
-            {/* 🛠 Fix syntax parsing dynamically binding properties instead of strict syntax flags */}
             <Button
               type="submit"
               {...({ isDisabled: isSubmitting } as any)}
