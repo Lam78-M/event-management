@@ -7,8 +7,9 @@ import {
   Calendar, 
   MapPin, 
   Clock, 
-  
-  CircleCheck
+  CircleCheck,
+  Xmark, // মডাল ক্লোজ করার জন্য এক্স মার্ক আইকন
+  TrashBin
 } from "@gravity-ui/icons";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -33,6 +34,11 @@ export default function UserBookingsDashboardPortal() {
   const [bookings, setBookings] = useState<BookedEventNode[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // --- কাস্টম মডালের জন্য নতুন স্টেট ---
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
   useEffect(() => {
     if (!session?.user?.email) {
       if (!authLoading) setLoading(false);
@@ -56,6 +62,35 @@ export default function UserBookingsDashboardPortal() {
 
     fetchUserBookingNodes();
   }, [session, authLoading]);
+
+  // ডিলিট বাটন ক্লিক করলে মডাল ওপেন হবে এবং আইডি সেভ হবে
+  const openDeleteModal = (id: string) => {
+    setSelectedBookingId(id);
+    setIsModalOpen(true);
+  };
+
+  // কাস্টম মডাল থেকে কনফার্ম করলে এই ফাংশনটি রান হবে
+  const handleConfirmDelete = async () => {
+    if (!selectedBookingId) return;
+    
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`http://localhost:5000/api/mybookings/${selectedBookingId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete the booking node.");
+
+      setBookings((prevBookings) => prevBookings.filter((item) => item._id !== selectedBookingId));
+      toast.success("Booking cancelled successfully!");
+    } catch (err: any) {
+      toast.error("Error deleting booking: " + err.message);
+    } finally {
+      setIsDeleting(false);
+      setIsModalOpen(false); // মডাল বন্ধ করা
+      setSelectedBookingId(null);
+    }
+  };
 
   if (authLoading || loading) {
     return (
@@ -89,7 +124,7 @@ export default function UserBookingsDashboardPortal() {
 
       <div className="max-w-6xl mx-auto relative z-10 space-y-8">
         
-        {/* Dynamic Controls Header Without Email & Search Filter */}
+        {/* Dynamic Controls Header */}
         <div className="border-b border-[#C4E2F5] pb-6">
           <span className="text-[10px] bg-[#C4E2F5]/60 text-[#2C5EAD] px-3 py-1 rounded-full font-black uppercase tracking-widest">
             Active Control Gateway
@@ -113,7 +148,6 @@ export default function UserBookingsDashboardPortal() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
               {bookings.map((item) => {
                 
-                // Safe price configuration
                 const formattedPrice = item?.price 
                   ? (Number(item.price) === 0 || String(item.price).toLowerCase() === "free" ? "FREE ACCESS" : `$${item.price}`)
                   : "N/A";
@@ -190,11 +224,19 @@ export default function UserBookingsDashboardPortal() {
                             <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider">Pass Secured Value</p>
                             <p className="text-base font-black text-[#1591DC] tracking-tight mt-0.5">{formattedPrice}</p>
                           </div>
+                          
+                          {/* কাস্টম মডাল ওপেন করার জন্য আপডেট বাটন */}
+                          <button
+                            onClick={() => openDeleteModal(item._id)}
+                            className="bg-rose-50 hover:bg-rose-100 text-rose-600 text-[10px] font-black px-4 py-2 rounded-xl border border-rose-200/60 transition-all duration-200 flex items-center gap-1.5 uppercase tracking-wider cursor-pointer"
+                          >
+                            <TrashBin width="12" height="12"/>
+                            Cancel Pass
+                          </button>
                         </div>
                       </div>
                     </div>
 
-                    {/* Cleaned Footer Without String ID Node */}
                     <div className="bg-slate-50/80 border-t border-[#C4E2F5]/50 px-6 py-2.5 text-[9px] font-bold text-slate-400 flex items-center justify-between shrink-0">
                       <span className="uppercase tracking-wide text-[8px] text-[#2C5EAD]/70 font-black">Verified Booking Registration</span>
                       <span>Booked: {displayBookedDate}</span>
@@ -206,6 +248,79 @@ export default function UserBookingsDashboardPortal() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* -----------------------------------------------------
+          কাস্টম কনফার্মেশন মডাল (Custom Confirmation Modal)
+         ----------------------------------------------------- */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* ব্যাকড্রপ ব্লার ব্যাকগ্রাউন্ড */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isDeleting && setIsModalOpen(false)}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            />
+
+            {/* মডাল কন্টেন্ট বক্স */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="bg-white rounded-[28px] border border-[#C4E2F5] shadow-xl max-w-sm w-full p-6 relative z-10 overflow-hidden space-y-5"
+            >
+              {/* ক্লোজ বাটন */}
+              <button 
+                disabled={isDeleting}
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer disabled:opacity-50"
+              >
+                <Xmark width="16" height="16" />
+              </button>
+
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center text-rose-500 text-xl mx-auto mb-2 animate-bounce">
+                  ⚠️
+                </div>
+                <h3 className="text-base font-black text-[#2C5EAD] tracking-tight">
+                  Cancel Registration?
+                </h3>
+                <p className="text-xs font-semibold text-slate-400 leading-relaxed px-2">
+                  Are you sure you want to purge this active access token loop? This action cannot be reverted.
+                </p>
+              </div>
+
+              {/* অ্যাকশন বাটনসমূহ */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  disabled={isDeleting}
+                  onClick={() => setIsModalOpen(false)}
+                  className="w-full bg-slate-100 hover:bg-slate-200/80 text-slate-600 text-xs font-black py-3 rounded-xl transition-all uppercase tracking-wider cursor-pointer disabled:opacity-50"
+                >
+                  Keep Pass
+                </button>
+                <button
+                  disabled={isDeleting}
+                  onClick={handleConfirmDelete}
+                  className="w-full bg-rose-500 hover:bg-rose-600 text-white text-xs font-black py-3 rounded-xl transition-all shadow-md shadow-rose-500/10 uppercase tracking-wider cursor-pointer flex items-center justify-center gap-2 disabled:bg-rose-400"
+                >
+                  {isDeleting ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Purging...
+                    </>
+                  ) : (
+                    "Yes, Cancel"
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -101,6 +101,7 @@ export default function EventDetailedDisplayPortal() {
 
       if (!response.ok) throw new Error("Transaction verification failure on database write matrix.");
       toast.success("🎟️ Slot transaction secured successfully with user email!");
+      router.push('/dashboard/users/bookings')
 
     } catch (error: any) {
       toast.error("Error dispatching data packet: " + error.message);

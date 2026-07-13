@@ -23,9 +23,10 @@ export default function UsersDashboard() {
 
   const menuItems = {
     user: [
-      { id: "overview", href: "/dashboard/users", name: "Overview", icon: <FiGrid className="w-4 h-4" /> },
+      { id: "overview", href: "/dashboard/users  ", name: "Overview", icon: <FiGrid className="w-4 h-4" /> },
       { id: "my-events", href: "/dashboard/users/bookings", name: "My Registrations", icon: <FiCalendar className="w-4 h-4" /> },
-      { id: "profile", href: "/dashboard/profile", name: "Account Profile", icon: <FiUser className="w-4 h-4" /> },
+      { id: "profile", href: "/dashboard/users/profile", name: "Account Profile", icon: <FiUser className="w-4 h-4" /> },
+      { id: "downloading", href: "/dashboard/users/tickets", name: "Download Ticket", icon: <FiUser className="w-4 h-4" /> },
     ],
     organizer: [
       { id: "overview", href: "/dashboard/organizer", name: "Organizer Console", icon: <FiActivity className="w-4 h-4" /> },
