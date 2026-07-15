@@ -38,7 +38,7 @@ export default function UserProfileDashboardPortal() {
 
     const fetchUserProfile = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/userprofile?email=${session.user.email}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/userprofile?email=${session.user.email}`);
         if (!res.ok) throw new Error("Sync pipeline processing failed for user matrix data.");
         
         const data = await res.json();

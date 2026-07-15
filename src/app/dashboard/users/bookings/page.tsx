@@ -47,7 +47,7 @@ export default function UserBookingsDashboardPortal() {
 
     const fetchUserBookingNodes = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/mybookings?email=${session.user.email}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/mybookings?email=${session.user.email}`);
         if (!res.ok) throw new Error("Sync pipeline processing failed with target database cloud coordinates.");
         
         const data = await res.json();
@@ -75,7 +75,7 @@ export default function UserBookingsDashboardPortal() {
     
     setIsDeleting(true);
     try {
-      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/mybookings/${selectedBookingId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/mybookings/${selectedBookingId}`, {
         method: "DELETE",
       });
 

@@ -30,7 +30,7 @@ export default function AdminUserManagement() {
   // এপিআই থেকে ইউজার ডাটা লোড করা
   const fetchUsers = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/users`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users`);
       if (res.ok) {
         const data = await res.json();
         setUsers(data);
@@ -50,7 +50,7 @@ export default function AdminUserManagement() {
   const handleApproveUser = async (id: string) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/users/${id}/approve`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/${id}/approve`, {
         method: "PATCH",
       });
       if (!res.ok) throw new Error("Approval transaction failed.");
@@ -68,7 +68,7 @@ export default function AdminUserManagement() {
   const handlePendingUser = async (id: string) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/users/${id}/pending`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/${id}/pending`, {
         method: "PATCH",
       });
       if (!res.ok) throw new Error("Suspension transaction failed.");
@@ -93,7 +93,7 @@ export default function AdminUserManagement() {
     if (!userToDelete) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/users/${userToDelete}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/${userToDelete}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to purge user node.");

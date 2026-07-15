@@ -33,7 +33,7 @@ export default function DashboardContentPage() {
     const fetchBookings = async () => {
       try {
         // তোমার বুকিং এপিআই রুট
-        const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/mybookings?email=${session.user.email}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/mybookings?email=${session.user.email}`);
         if (res.ok) {
           const data = await res.json();
           setBookings(data);

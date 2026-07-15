@@ -33,7 +33,7 @@ export default function MyBookingsTicketPage() {
 
     const fetchBookings = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/mybookings?email=${session.user.email}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/mybookings?email=${session.user.email}`);
         if (!res.ok) throw new Error("Failed to synchronize booking streams.");
         const data = await res.json();
         setBookings(data);
@@ -51,7 +51,7 @@ export default function MyBookingsTicketPage() {
     if (!confirm("Are you sure you want to cancel this event pass?")) return;
 
     try {
-      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/mybookings/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/mybookings/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();

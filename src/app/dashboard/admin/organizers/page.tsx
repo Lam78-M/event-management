@@ -45,7 +45,7 @@ export default function OrganizerManagementPage() {
   // ডাটা ফেচিং ফাংশন
   const fetchUsers = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/users`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users`);
       if (!res.ok) throw new Error("Failed to sync user database sequence.");
       const data: UserData[] = await res.json();
       
@@ -99,7 +99,7 @@ export default function OrganizerManagementPage() {
     const userId = getUserId(selectedUser._id);
 
     try {
-      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/users/${userId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/${userId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -135,7 +135,7 @@ export default function OrganizerManagementPage() {
     const userId = getUserId(selectedUser._id);
 
     try {
-      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/users/${userId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/${userId}`, {
         method: "DELETE"
       });
 
