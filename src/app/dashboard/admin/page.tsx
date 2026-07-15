@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { House, Person, Bell, Paperclip, LayoutSideContentLeft } from "@gravity-ui/icons";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Mock System Logs for Admin View
 const adminLogs = [
@@ -10,9 +12,46 @@ const adminLogs = [
   { id: 3, action: "Critical Event Approval Pending", target: "Hackathon 2026", time: "1 hr ago", level: "warning" },
 ];
 
+interface UserData {
+  _id: string;
+  approved: boolean;
+}
+
 export default function DashboardContentPage() {
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [totalEvents, setTotalEvents] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // এপিআই থেকে রিয়েল-টাইম মেট্রিকেস ডাটা ফেচ করা
+  const fetchDashboardData = async () => {
+    try {
+      // ১. ইউজার ডাটা ফেচিং
+      const userRes = await fetch("http://localhost:5000/api/users");
+      if (userRes.ok) {
+        const userData = await userRes.json();
+        setUsers(userData);
+      }
+
+      // ২. ইভেন্ট কাউন্ট ডাটা ফেচিং
+      const eventRes = await fetch("http://localhost:5000/api/events/count");
+      if (eventRes.ok) {
+        const eventData = await eventRes.json();
+        setTotalEvents(eventData.count);
+      }
+    } catch (err) {
+      toast.error("Failed to synchronize active database node metrics.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
   return (
     <div className="p-6 md:p-10 w-full max-w-5xl mx-auto space-y-8 text-left mt-20">
+      <ToastContainer position="top-center" autoClose={2000} />
       
       {/* Header Banner */}
       <div className="border-b border-gray-200 pb-5">
@@ -24,38 +63,48 @@ export default function DashboardContentPage() {
         </p>
       </div>
 
-      {/* Admin Operations Stats Metrics Grid */}
+      {/* 📊 Admin Operations Stats Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Active Users */}
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Active Users</p>
-            <h3 className="text-2xl font-black text-[#021A54] mt-0.5">48,290</h3>
+            <h3 className="text-2xl font-black text-[#021A54] mt-0.5">
+              {loading ? "..." : users.length.toLocaleString()}
+            </h3>
           </div>
           <div className="p-2.5 bg-blue-50 text-blue-500 rounded-xl"><Person /></div>
         </div>
 
+        {/* 🌟 Total Events (নতুন রিয়েল-টাইম ফিল্ড) */}
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Verified Hosts</p>
-            <h3 className="text-2xl font-black text-[#021A54] mt-0.5">1,240</h3>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Events</p>
+            <h3 className="text-2xl font-black text-[#021A54] mt-0.5">
+              {loading ? "..." : totalEvents.toLocaleString()}
+            </h3>
           </div>
           <div className="p-2.5 bg-[#FF85BB]/10 text-[#FF85BB] rounded-xl"><LayoutSideContentLeft /></div>
         </div>
 
+        {/* System Node Status */}
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">System Node Status</p>
             <h3 className="text-2xl font-black text-emerald-600 mt-0.5">99.98%</h3>
           </div>
-          <div className="p-2.5 bg-emerald-50 text-emerald-50 rounded-xl"><House /></div>
+          <div className="p-2.5 bg-emerald-50 text-emerald-500 rounded-xl"><House /></div>
         </div>
 
+        {/* Pending Approval Counts */}
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Urgent Queue</p>
-            <h3 className="text-2xl font-black text-amber-500 mt-0.5">14 Forms</h3>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Pending Approvals</p>
+            <h3 className="text-2xl font-black text-amber-500 mt-0.5">
+              {loading ? "..." : users.filter(u => !u.approved).length} Forms
+            </h3>
           </div>
-          <div className="p-2.5 bg-amber-50 text-amber-50 rounded-xl"><Bell /></div>
+          <div className="p-2.5 bg-amber-50 text-amber-500 rounded-xl"><Bell /></div>
         </div>
       </div>
 

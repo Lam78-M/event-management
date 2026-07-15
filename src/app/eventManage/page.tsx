@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Calendar, MapPin, Clock, ArrowUpRight, ChevronLeft, ChevronRight } from "@gravity-ui/icons";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, MapPin, Clock, ArrowUpRight, ChevronLeft, ChevronRight, Magnifier, ArrowRotateLeft } from "@gravity-ui/icons";
 import Link from "next/link";
-import Image from "next/image"; // 🎯 Next.js Image কম্পোনেন্ট ইম্পোর্ট করা হলো
+import Image from "next/image";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -45,6 +45,11 @@ export default function EventsExplorePage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 12;
 
+  // 🔍 সার্চ ও ফিল্টার স্টেটস
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedLocationType, setSelectedLocationType] = useState<string>("");
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -62,15 +67,44 @@ export default function EventsExplorePage() {
     fetchEvents();
   }, []);
 
-  const totalPages = Math.ceil(events.length / itemsPerPage);
+  // 🎛️ ইউনিক ক্যাটাগরি লিস্ট ডাইনামিকালি বের করা (ফিল্টার ড্রপডাউনের জন্য)
+  const categories = Array.from(new Set(events.map((e) => e.category)));
+
+  // ⚙️ সার্চ এবং ফিল্টারিং লজিক প্রসেস
+  const filteredEvents = events.filter((event) => {
+    const matchesSearch =
+      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "" || event.category === selectedCategory;
+    const matchesLocation = selectedLocationType === "" || event.locationType === selectedLocationType;
+
+    return matchesSearch && matchesCategory && matchesLocation;
+  });
+
+  // 🔄 রিসেট ফাংশন
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("");
+    setSelectedLocationType("");
+    setCurrentPage(1);
+    toast.info("Search node filters reset successfully.");
+  };
+
+  // 📄 পেজিনেশন হিসাব-নিকাশ (ফিল্টার করা ডাটার ওপর ভিত্তি করে)
+  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
   const indexOfLastEvent = currentPage * itemsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - itemsPerPage;
-  const currentEvents = events.slice(indexOfFirstEvent, indexOfLastEvent);
+  const currentEvents = filteredEvents.slice(indexOfFirstEvent, indexOfLastEvent);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // পেজ নম্বর জেনারেটর
+  useEffect(() => {
+    setCurrentPage(1); // সার্চ বা ফিল্টার চেঞ্জ হলে পেজ ১-এ নিয়ে যাবে
+  }, [searchQuery, selectedCategory, selectedLocationType]);
 
   const getPaginationRange = () => {
     const totalNumbers = 5;
@@ -110,8 +144,8 @@ export default function EventsExplorePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 py-16 px-4 md:px-8 relative overflow-hidden pt-40">
-      <ToastContainer position="top-center" autoClose={3000} />
+    <div className="min-h-screen bg-slate-50/50 py-16 px-4 md:px-8 relative overflow-hidden pt-40 text-left">
+      <ToastContainer position="top-center" autoClose={2500} />
 
       {/* Background Blur Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#C4E2F5]/20 rounded-full filter blur-[120px] pointer-events-none will-change-transform" />
@@ -120,7 +154,7 @@ export default function EventsExplorePage() {
       <div className="max-w-7xl mx-auto relative z-10">
         
         {/* Header */}
-        <div className="mb-12 border-b border-[#C4E2F5] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="mb-8 border-b border-[#C4E2F5] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <motion.h1 
               initial={{ opacity: 0, x: -10 }}
@@ -141,10 +175,70 @@ export default function EventsExplorePage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-xs font-bold uppercase tracking-wider bg-[#C4E2F5]/50 text-[#2C5EAD] px-4 py-2 rounded-full border border-[#4BB8FA]/30"
+            className="text-xs font-bold uppercase tracking-wider bg-[#C4E2F5]/50 text-[#2C5EAD] px-4 py-2 rounded-full border border-[#4BB8FA]/30 shadow-sm align-middle self-start md:self-end"
           >
-            Total Pipelines: {events.length} Active
+            Matches Found: {filteredEvents.length} Nodes
           </motion.div>
+        </div>
+
+        {/* 🔮 MULTI-SEARCH SEARCH DECK PANEL */}
+        <div className="mb-12 bg-white/70 backdrop-blur-md rounded-3xl border border-[#C4E2F5] p-5 md:p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+          {/* 1. Keyword Search Text Box */}
+          <div className="flex flex-col space-y-2">
+            <label className="text-xs font-black text-[#2C5EAD] tracking-wide uppercase">Search Event</label>
+            <div className="relative flex items-center">
+              <Magnifier className="absolute left-4 w-4 h-4 text-[#1591DC]" />
+              <input
+                type="text"
+                placeholder="Type title or keyword..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 text-xs font-semibold bg-white border border-[#C4E2F5] rounded-xl text-slate-700 placeholder-[#1591DC]/50 focus:outline-none focus:border-[#2C5EAD] focus:ring-1 focus:ring-[#2C5EAD] transition-all"
+              />
+            </div>
+          </div>
+
+          {/* 2. Dynamic Category Select */}
+          <div className="flex flex-col space-y-2">
+            <label className="text-xs font-black text-[#2C5EAD] tracking-wide uppercase">Category Matrix</label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-4 py-3 text-xs font-bold bg-white border border-[#C4E2F5] rounded-xl text-slate-700 focus:outline-none focus:border-[#2C5EAD] transition-all cursor-pointer accent-[#2C5EAD]"
+            >
+              <option value="">All Categories</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* 3. Location Type Configuration */}
+          <div className="flex flex-col space-y-2">
+            <label className="text-xs font-black text-[#2C5EAD] tracking-wide uppercase">Environment Type</label>
+            <select
+              value={selectedLocationType}
+              onChange={(e) => setSelectedLocationType(e.target.value)}
+              className="w-full px-4 py-3 text-xs font-bold bg-white border border-[#C4E2F5] rounded-xl text-slate-700 focus:outline-none focus:border-[#2C5EAD] transition-all cursor-pointer"
+            >
+              <option value="">All Environments</option>
+              <option value="venue">📍 Venue (Physical)</option>
+              <option value="online">🌐 Online (Virtual)</option>
+            </select>
+          </div>
+
+          {/* 4. Reset Filters Action Button */}
+          <div>
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              disabled={!searchQuery && !selectedCategory && !selectedLocationType}
+              className="w-full py-3 bg-[#C4E2F5]/40 hover:bg-[#2C5EAD] text-[#2C5EAD] hover:text-white disabled:bg-slate-100 disabled:text-slate-400 font-black rounded-xl text-xs transition-all duration-300 border border-[#C4E2F5] disabled:border-slate-200 shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+            >
+              <ArrowRotateLeft className="w-4 h-4" />
+              Reset System Matrix
+            </button>
+          </div>
         </div>
 
         {/* Loading Matrix State Skeleton */}
@@ -159,13 +253,19 @@ export default function EventsExplorePage() {
               </div>
             ))}
           </div>
-        ) : events.length === 0 ? (
+        ) : currentEvents.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }}
             className="text-center py-20 bg-white/60 backdrop-blur-md rounded-3xl border border-[#C4E2F5] shadow-inner"
           >
-            <p className="text-[#1591DC] font-black text-lg">No active event matrices found in the database stream.</p>
+            <p className="text-[#1591DC] font-black text-lg">No synchronized event matrices match your criteria.</p>
+            <button 
+              onClick={handleResetFilters} 
+              className="mt-4 px-5 py-2.5 bg-[#2C5EAD] text-white text-xs font-bold rounded-xl shadow-md hover:bg-[#1591DC] transition-colors"
+            >
+              Clear Search Query
+            </button>
           </motion.div>
         ) : (
           <>
@@ -183,7 +283,6 @@ export default function EventsExplorePage() {
                   whileHover={{ y: -6, transition: { duration: 0.2, ease: "easeInOut" } }}
                   className="bg-white/80 backdrop-blur-md rounded-3xl border border-[#C4E2F5] shadow-sm hover:shadow-xl hover:shadow-[#4BB8FA]/10 overflow-hidden flex flex-col group transition-all duration-300"
                 >
-                  {/* 🎯 ইমেজের প্যারেন্ট ডিভ-এ relative ক্লাস থাকা জরুরি Next Image fill ব্যবহারের জন্য */}
                   <div className="h-48 w-full overflow-hidden relative bg-slate-100">
                     <div className="absolute top-3 left-3 z-20 bg-white/90 backdrop-blur-md text-[#2C5EAD] text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full shadow-sm border border-[#C4E2F5]">
                       {event.category}
@@ -197,9 +296,9 @@ export default function EventsExplorePage() {
                       <Image 
                         src={event.image} 
                         alt={event.title} 
-                        fill // 🎯 কন্টেইনারের পুরো জায়গা কভার করার জন্য fill প্রপ
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // 🎯 ব্রাউজারকে সঠিক সাইজের ছবি লোড করতে সাহায্য করবে
-                        priority={currentPage === 1} // 🎯 প্রথম পেজের প্রথম দিকের ছবিগুলো ফাস্ট রেন্ডার করবে
+                        fill 
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" 
+                        priority={currentPage === 1} 
                         className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out" 
                       />
                     ) : (

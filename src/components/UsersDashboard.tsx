@@ -5,9 +5,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { 
   FiGrid, FiCalendar, FiUser, FiSettings, 
   FiActivity, FiPlusCircle, FiSliders, FiShield, FiUsers, FiFileText,
-  FiMenu, FiX 
+  FiMenu, FiX, 
+  FiEdit
 } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
+import { User2 } from "lucide-react";
+import { CgOrganisation } from "react-icons/cg";
 
 export default function UsersDashboard() {
   // 📌 Mobile Menu State Manager
@@ -31,12 +34,16 @@ export default function UsersDashboard() {
     organizer: [
       { id: "overview", href: "/dashboard/organizer", name: "Organizer Console", icon: <FiActivity className="w-4 h-4" /> },
       { id: "create-event", href: "/dashboard/organizer/launchNewEvent", name: "Launch New Event", icon: <FiPlusCircle className="w-4 h-4" /> },
-      { id: "manage-events", href: "/dashboard/organizer/streams", name: "Track Content Streams", icon: <FiSliders className="w-4 h-4" /> },
+      { id: "manage-events", href: "/dashboard/organizer/manageEvents", name: "Manage Events", icon: <FiSliders className="w-4 h-4" /> },
+      {id: "event-edit", href: "/dashboard/organizer/editEvents", name: "Edit Events", icon: <FiEdit className="w-4 h-4"/>},
+     
     ],
     admin: [
       { id: "overview", href: "/dashboard/admin", name: "System Admin Panel", icon: <FiShield className="w-4 h-4" /> },
-      { id: "manage-users", href: "/dashboard/admin/users", name: "Control Accounts Grid", icon: <FiUsers className="w-4 h-4" /> },
+      { id: "manage-users", href: "/dashboard/admin/showBookings", name: "Users Bookings", icon: <FiUsers className="w-4 h-4" /> },
       { id: "audit-logs", href: "/dashboard/admin/logs", name: "Audit Framework Logs", icon: <FiFileText className="w-4 h-4" /> },
+      {id: "user-manage", href: "/dashboard/admin/ourUsers", name: "Manage Users" , icon: <User2 className="w-4 h-4"/>},
+       {id: "organizer-info", href: "/dashboard/admin/organizers", name: "Organizers", icon: <CgOrganisation className="h-4 w-4"/>}
     ]
   };
 

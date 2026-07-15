@@ -9,19 +9,30 @@ export const auth = betterAuth({
   emailAndPassword: { 
     enabled: true, 
   },
+ socialProviders: {
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID as string,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET as string // clientKey-র বদলে clientSecret এবং শেষে as string দিন
+  }
+},
 
   database: mongodbAdapter(db, {
-    // Optional: if you don't provide a client, database transactions won't be enabled.
     client
   }),
 
-  // 🌟 ENTER THIS SPECIFIC BLOCK: Better Auth custom schema setup pipeline fields data mapping metadata
+  // 🎯 Better Auth custom schema setup pipeline
   user: {
     additionalFields: {
       role: {
         type: "string",
         required: false,
-        defaultValue: "user", // Registration select element mapping fallback tracking option string parameter validation default user row mapping key string value logic code setup layout data base document
+        defaultValue: "user",
+      },
+      // 🚀 এখানে নতুন approved ফিল্ডটি যোগ করা হলো
+      approved: {
+        type: "boolean",
+        required: false,
+        defaultValue: false, // নতুন রেজিস্টার করা সব ইউজার ডিফল্টভাবে false (Pending) থাকবে
       },
     },
   },

@@ -1,28 +1,102 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { 
   FiActivity, FiUsers, FiTrendingUp, FiPlusCircle, 
-  FiSliders, FiCalendar, FiMapPin, FiClock 
+  FiCalendar, FiMapPin 
 } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
+
+interface EventData {
+  _id: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  tickets: string;
+  price: string;
+}
+
+interface UserData {
+  _id: string;
+  name: string;
+  email: string;
+}
 
 export default function DashboardContentPage() {
   // 🌟 Better Auth Session layer theke user parameters sync
   const { data: session } = authClient.useSession();
 
-  // Organizer Static Live Data Mock System
-  const organizerStats = [
-    { title: "Total Live Streams", count: "6 Active", icon: <FiActivity />, change: "+1 hosting tonight", color: "text-[#2C5EAD]", bg: "bg-[#C4E2F5]/30" },
-    { title: "Registered Ticket Buyers", count: "1,420", icon: <FiUsers />, change: "92% retention rate", color: "text-emerald-500", bg: "bg-emerald-50" },
-    { title: "Gross Income Metric", count: "$3,450", icon: <FiTrendingUp />, change: "+24% payout pipeline", color: "text-[#4BB8FA]", bg: "bg-cyan-50" },
-  ];
+  // 🎯 স্টেট ম্যানেজমেন্ট
+  const [events, setEvents] = useState<EventData[]>([]);
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState<boolean>(true);
+  const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
 
-  const hostedEvents = [
-    { id: 1, title: "National Next.js Hackathon 2026", date: "July 15, 2026", time: "10:00 AM", location: "Dhaka, BD", tag: "Hackathon" },
-    { id: 2, title: "Tailwind CSS Advanced Workshop", date: "July 22, 2026", time: "03:00 PM", location: "Online (Zoom)", tag: "Workshop" },
-    { id: 3, title: "DevOps & Cloud Native Meetup", date: "Aug 02, 2026", time: "05:30 PM", location: "Chittagong, BD", tag: "Meetup" },
+  // 🔄 ১. এপিআই থেকে সব ইভেন্ট ফেচ করার ফাংশন
+  const fetchEvents = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/eventmanage");
+      if (res.ok) {
+        const data = await res.json();
+        setEvents(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch events:", err);
+    } finally {
+      setLoadingEvents(false);
+    }
+  };
+
+  // 🔄 ২. এপিআই থেকে সব ইউজার ফেচ করার ফাংশন
+  const fetchUsers = async () => {
+    try {
+      // 🎯 তোমার ইউজার ডাটাবেসের সঠিক API রুটটি এখানে বসিয়ে দিও
+      const res = await fetch("http://localhost:5000/api/users"); 
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+    fetchUsers();
+  }, []);
+
+  // 📊 ডাইনামিক অ্যানালিটিক্স কাউন্টার
+  const organizerStats = [
+    { 
+      title: "Total Hosted Events", 
+      count: loadingEvents ? "Loading..." : `${events.length} Active`, 
+      icon: <FiActivity />, 
+      change: "+1 hosting tonight", 
+      color: "text-[#2C5EAD]", 
+      bg: "bg-[#C4E2F5]/30" 
+    },
+    { 
+      title: "Total Registered Users", 
+      // 🎯 ২য় কার্ডে এখন ডামি ডাটা সরিয়ে ডাটাবেসের ইউজার কাউন্ট বসানো হলো
+      count: loadingUsers ? "Loading..." : `${users.length} Users`, 
+      icon: <FiUsers />, 
+      change: "Active in system", 
+      color: "text-emerald-500", 
+      bg: "bg-emerald-50" 
+    },
+    { 
+      title: "Gross Income Metric", 
+      count: "$3,450", 
+      icon: <FiTrendingUp />, 
+      change: "+24% payout pipeline", 
+      color: "text-[#4BB8FA]", 
+      bg: "bg-cyan-50" 
+    },
   ];
 
   return (
@@ -79,26 +153,34 @@ export default function DashboardContentPage() {
           </div>
 
           <div className="space-y-3">
-            {hostedEvents.map((event) => (
-              <div 
-                key={event.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50/70 border border-slate-100 rounded-xl gap-3 transition-all hover:border-[#C4E2F5]"
-              >
-                <div className="space-y-1.5 min-w-0">
-                  <span className="inline-block px-2.5 py-0.5 bg-[#C4E2F5]/40 text-[#2C5EAD] text-[10px] font-black rounded-lg uppercase tracking-wider">
-                    {event.tag}
-                  </span>
-                  <h4 className="text-sm font-black text-slate-800 truncate">{event.title}</h4>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 font-medium">
-                    <span className="flex items-center gap-1"><FiCalendar className="w-3.5 h-3.5 text-[#4BB8FA]" /> {event.date}</span>
-                    <span className="flex items-center gap-1"><FiMapPin className="w-3.5 h-3.5 text-slate-400" /> {event.location}</span>
+            {loadingEvents ? (
+              [1, 2, 3].map((n) => (
+                <div key={n} className="p-4 bg-slate-50 animate-pulse rounded-xl h-20 w-full" />
+              ))
+            ) : events.length === 0 ? (
+              <p className="text-xs text-slate-400 font-medium py-4 text-center">No active events found.</p>
+            ) : (
+              events.slice(0, 3).map((event) => (
+                <div 
+                  key={event._id}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50/70 border border-slate-100 rounded-xl gap-3 transition-all hover:border-[#C4E2F5]"
+                >
+                  <div className="space-y-1.5 min-w-0">
+                    <span className="inline-block px-2.5 py-0.5 bg-[#C4E2F5]/40 text-[#2C5EAD] text-[10px] font-black rounded-lg uppercase tracking-wider">
+                      Event
+                    </span>
+                    <h4 className="text-sm font-black text-slate-800 truncate">{event.title}</h4>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 font-medium">
+                      <span className="flex items-center gap-1"><FiCalendar className="w-3.5 h-3.5 text-[#4BB8FA]" /> {event.date}</span>
+                      <span className="flex items-center gap-1"><FiMapPin className="w-3.5 h-3.5 text-slate-400" /> {event.location}</span>
+                    </div>
                   </div>
+                  <button className="px-4 py-2 bg-white border border-slate-200 hover:border-[#2C5EAD] hover:text-[#2C5EAD] text-slate-700 text-xs font-bold rounded-xl transition-all shadow-sm shrink-0 sm:self-center">
+                    Edit Setup
+                  </button>
                 </div>
-                <button className="px-4 py-2 bg-white border border-slate-200 hover:border-[#2C5EAD] hover:text-[#2C5EAD] text-slate-700 text-xs font-bold rounded-xl transition-all shadow-sm shrink-0 sm:self-center">
-                  Edit Setup
-                </button>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
