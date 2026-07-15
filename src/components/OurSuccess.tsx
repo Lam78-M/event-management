@@ -40,9 +40,10 @@ const successCards = [
 
 export default function OurSuccess() {
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8 mt-40 mb-40">
+   <div className="bg-slate-50/50">
+     <div className="w-full max-w-7xl mx-auto px-4 py-8 mt-40 mb-40 ">
       {/* ৩টি রেসপনসিভ কার্ড গ্রিড */}
-      <h2 className="text-3xl font-black text-[#2C5EAD] tracking-tight mb-6">Our Success Ratio</h2>
+      <h2 className="text-3xl font-black text-[#2C5EAD] tracking-tight mb-6 ">Our Success Ratio</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {successCards.map((card) => (
           <div
@@ -74,5 +75,6 @@ export default function OurSuccess() {
         ))}
       </div>
     </div>
+   </div>
   );
 }

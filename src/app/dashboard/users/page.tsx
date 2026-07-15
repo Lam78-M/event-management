@@ -141,12 +141,6 @@ export default function DashboardContentPage() {
         </div>
       </div>
 
-
-
-
-
- 
-
     </div>
   );
 }

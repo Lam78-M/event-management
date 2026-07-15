@@ -186,7 +186,7 @@ export default function EventsStats() {
               animate="show"
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
             >
-              {currentEvents.map((event) => (
+              {currentEvents.slice(0, 3).map((event) => (
                 <motion.div
                   key={event._id}
                   variants={cardVariants}
