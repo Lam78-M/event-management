@@ -66,7 +66,7 @@ const Hero = () => {
 
             {/* Action Buttons with Spring Animation */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
-              <Link href="/events" className="w-full sm:w-auto">
+              <Link href="/eventManage" className="w-full sm:w-auto">
                 <motion.button 
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
@@ -77,36 +77,10 @@ const Hero = () => {
                 </motion.button>
               </Link>
 
-              <Link href="/events/add" className="w-full sm:w-auto">
-                <motion.button 
-                  whileHover={{ scale: 1.03, backgroundColor: "rgba(44,94,173,0.05)" }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full sm:w-auto rounded-xl border-2 border-brand-dark/80 px-7 py-3.5 font-bold text-brand-dark transition-all"
-                >
-                  Create Event
-                </motion.button>
-              </Link>
             </div>
 
             {/* Upgraded Dynamic Search Box Container */}
-            <form 
-              onSubmit={handleSearchSubmit}
-              className="flex items-center max-w-lg mx-auto lg:mx-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md focus-within:ring-2 focus-within:ring-brand-primary/30 transition-all p-1"
-            >
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search workshops, hackathons, meetups..."
-                className="w-full px-4 py-3 outline-none text-slate-700 placeholder-slate-400 text-sm font-semibold"
-              />
-              <button 
-                type="submit" 
-                className="bg-gradient-to-r from-brand-dark to-brand-primary p-3.5 rounded-xl text-white transition-all hover:opacity-90 active:scale-95"
-              >
-                <FiSearch size={16} />
-              </button>
-            </form>
+           
 
             {/* Balanced & Clean Stats Row Grid */}
             <div className="pt-6 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4 border-t border-slate-100 mt-8">

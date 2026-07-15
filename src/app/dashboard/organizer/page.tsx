@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { 
-  FiActivity, FiUsers, FiTrendingUp, FiPlusCircle, 
+  FiActivity, FiUsers, FiTrendingUp, 
   FiCalendar, FiMapPin 
 } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
@@ -113,9 +113,7 @@ export default function DashboardContentPage() {
           </p>
         </div>
         
-        <button className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2C5EAD] text-white font-bold text-xs rounded-xl shadow-lg shadow-[#2C5EAD]/20 hover:bg-[#1e4682] transition-all self-center lg:self-start">
-          <FiPlusCircle className="w-4 h-4" /> Create New Event
-        </button>
+    
       </div>
 
       {/* 2. Organizer Analytics Counters Grid Layout */}
@@ -149,7 +147,7 @@ export default function DashboardContentPage() {
         <div className="lg:col-span-8 bg-white border border-slate-200/60 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm text-left">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-sm font-black text-slate-800">Your Hosted Events Live Logs</h3>
-            <span className="text-xs font-bold text-[#2C5EAD] hover:underline cursor-pointer">View All</span>
+         
           </div>
 
           <div className="space-y-3">
@@ -175,9 +173,7 @@ export default function DashboardContentPage() {
                       <span className="flex items-center gap-1"><FiMapPin className="w-3.5 h-3.5 text-slate-400" /> {event.location}</span>
                     </div>
                   </div>
-                  <button className="px-4 py-2 bg-white border border-slate-200 hover:border-[#2C5EAD] hover:text-[#2C5EAD] text-slate-700 text-xs font-bold rounded-xl transition-all shadow-sm shrink-0 sm:self-center">
-                    Edit Setup
-                  </button>
+                
                 </div>
               ))
             )}

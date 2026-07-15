@@ -44,9 +44,16 @@ export default function EventDetailedDisplayPortal() {
   useEffect(() => {
     if (!id) return;
 
-    const fetchSingleEventNode = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/api/eventmanage`);
+   const fetchSingleEventNode = async () => {
+  try {
+    const res = await fetch(`http://localhost:5000/api/eventmanage`, {
+      method: "GET", // মেথড বলে দেওয়া ভালো
+      cache: "no-store", // 👈 Next.js ক্যাশিং বন্ধ করবে যেন হেডার প্রতিবার ফ্রেশ যায়
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "logged-in", // 👈 প্রফেশনাল স্ট্যান্ডার্ড ক্যাপিটাল 'A'
+      },
+    });
         if (!res.ok) throw new Error("Synchronization failure with matrix storage.");
         const allEvents: EventData[] = await res.json();
         

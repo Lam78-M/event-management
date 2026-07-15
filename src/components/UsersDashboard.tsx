@@ -22,7 +22,7 @@ export default function UsersDashboard() {
   // 🔗 Next.js current URL path hook reader (Eita diye automatic color highlit hobe)
   const pathname = usePathname(); 
   
-  const currentRole = session?.user?.role || "user"; 
+const currentRole = (session?.user as { role?: string })?.role || "user";
 
   const menuItems = {
     user: [
@@ -41,7 +41,7 @@ export default function UsersDashboard() {
     admin: [
       { id: "overview", href: "/dashboard/admin", name: "System Admin Panel", icon: <FiShield className="w-4 h-4" /> },
       { id: "manage-users", href: "/dashboard/admin/showBookings", name: "Users Bookings", icon: <FiUsers className="w-4 h-4" /> },
-      { id: "audit-logs", href: "/dashboard/admin/logs", name: "Audit Framework Logs", icon: <FiFileText className="w-4 h-4" /> },
+  
       {id: "user-manage", href: "/dashboard/admin/ourUsers", name: "Manage Users" , icon: <User2 className="w-4 h-4"/>},
        {id: "organizer-info", href: "/dashboard/admin/organizers", name: "Organizers", icon: <CgOrganisation className="h-4 w-4"/>}
     ]

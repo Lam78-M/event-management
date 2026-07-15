@@ -1,10 +1,23 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
+
+// ১. TypeScript Interfaces ডিফাইন করা হলো
+interface StatItem {
+  value: string;
+  label: string;
+  desc: string;
+}
+
+interface CoreValueItem {
+  title: string;
+  desc: string;
+  icon: string;
+}
 
 // Core Statistics Metrics Matrix
-const STATS = [
+const STATS: StatItem[] = [
   { value: "10K+", label: "Active Users", desc: "Global accounts synchronized daily." },
   { value: "500+", label: "Live Matrices", desc: "Events hosted across multiple domains." },
   { value: "99.9%", label: "Uptime Stream", desc: "Flawless real-time pipeline delivery." },
@@ -12,7 +25,7 @@ const STATS = [
 ];
 
 // Core Value Frameworks Modules
-const CORE_VALUES = [
+const CORE_VALUES: CoreValueItem[] = [
   {
     title: "Seamless Architecture",
     desc: "We build modern, high-speed data pipelines that make discovering and management of live activations smooth and responsive.",
@@ -30,8 +43,8 @@ const CORE_VALUES = [
   },
 ];
 
-// Motion configuration parameters
-const containerVariants = {
+// ২. Motion configuration parameters (Explicitly typed as Variants)
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -39,7 +52,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } },
 };

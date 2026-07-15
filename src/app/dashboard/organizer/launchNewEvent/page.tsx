@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { 
   Calendar, 
   LayoutSideContentLeft, 
@@ -11,8 +11,8 @@ import {
 import { Button } from "@heroui/react";
 import { toast } from "react-toastify"; // 🎯 Toast functionality added
 
-// Framer Motion Animation Variants for Content Nodes
-const formSectionVariants = {
+// 🛠️ Typings explicitly resolved for Framer Motion Variants
+const formSectionVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1, 
@@ -33,7 +33,7 @@ export default function CreateEventForm() {
     tickets: "",
     price: "",
     description: "",
-    image: "" // 🎯 1. Image Base64 data string matrix initialization
+    image: "" // 🎯 Image Base64 data string matrix initialization
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,7 +42,7 @@ export default function CreateEventForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🎯 2. Local dynamic image compiler conversion pipeline
+  // 🎯 Local dynamic image compiler conversion pipeline
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -64,11 +64,11 @@ export default function CreateEventForm() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // 🎯 3. Standard Toastify Loader instance stream
+    // 🎯 Standard Toastify Loader instance stream
     const toastId = toast.loading("Deploying new event payload timeline structure...");
     
     try {
-      // 🚀 BACKEND PIPELINE COUPLING: Direct full REST API request method logic channel
+      // 🚀 BACKEND PIPELINE COUPLING
       const response = await fetch("http://localhost:5000/api/eventmanage", {
         method: "POST",
         headers: {
@@ -148,7 +148,10 @@ export default function CreateEventForm() {
           
           {/* 1. CORE DETAILS GRID SECTION */}
           <motion.div 
-            custom={0} variants={formSectionVariants} initial="hidden" animate="visible"
+            custom={0} 
+            variants={formSectionVariants} 
+            initial="hidden" 
+            animate="visible"
             whileHover={{ y: -2 }}
             className="bg-slate-50/50 backdrop-blur-md p-5 md:p-6 rounded-2xl border border-[#C4E2F5]/60 shadow-sm space-y-4 transition-shadow hover:shadow-md"
           >
@@ -200,9 +203,12 @@ export default function CreateEventForm() {
             </div>
           </motion.div>
 
-          {/* 🎯 IMAGE UPLOAD CONTAINER SECTION (INTEGRATED AS STEP 1.5) */}
+          {/* 🎯 IMAGE UPLOAD CONTAINER SECTION */}
           <motion.div 
-            custom={1} variants={formSectionVariants} initial="hidden" animate="visible"
+            custom={1} 
+            variants={formSectionVariants} 
+            initial="hidden" 
+            animate="visible"
             whileHover={{ y: -2 }}
             className="bg-slate-50/50 backdrop-blur-md p-5 md:p-6 rounded-2xl border border-[#C4E2F5]/60 shadow-sm space-y-4 transition-shadow hover:shadow-md"
           >
@@ -231,7 +237,10 @@ export default function CreateEventForm() {
 
           {/* 2. TIMELINE AND GEOLOCATION CONFIGURATION MATRIX */}
           <motion.div 
-            custom={2} variants={formSectionVariants} initial="hidden" animate="visible"
+            custom={2} 
+            variants={formSectionVariants} 
+            initial="hidden" 
+            animate="visible"
             whileHover={{ y: -2 }}
             className="bg-slate-50/50 backdrop-blur-md p-5 md:p-6 rounded-2xl border border-[#C4E2F5]/60 shadow-sm space-y-4 transition-shadow hover:shadow-md"
           >
@@ -278,7 +287,10 @@ export default function CreateEventForm() {
 
           {/* 3. CONTENT MARKDOWN CONTEXT AREA */}
           <motion.div 
-            custom={3} variants={formSectionVariants} initial="hidden" animate="visible"
+            custom={3} 
+            variants={formSectionVariants} 
+            initial="hidden" 
+            animate="visible"
             whileHover={{ y: -2 }}
             className="bg-slate-50/50 backdrop-blur-md p-5 md:p-6 rounded-2xl border border-[#C4E2F5]/60 shadow-sm space-y-4 transition-shadow hover:shadow-md"
           >
@@ -296,12 +308,14 @@ export default function CreateEventForm() {
 
           {/* ACTION BUTTON WRAPPER */}
           <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ delay: 0.4 }}
             className="pt-2 flex justify-end"
           >
             <Button
               type="submit"
-              {...({ isDisabled: isSubmitting } as any)}
+              isDisabled={isSubmitting}
               className="w-full sm:w-48 h-12 bg-[#2C5EAD] text-white font-black rounded-xl text-sm tracking-wide shadow-xl shadow-[#2C5EAD]/20 hover:bg-[#1591DC] transition-all transform active:scale-98 flex items-center justify-center gap-2"
             >
               {isSubmitting ? (

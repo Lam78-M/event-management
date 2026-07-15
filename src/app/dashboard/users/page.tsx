@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { House, Bell, Calendar } from "@gravity-ui/icons";
 import { authClient } from "@/lib/auth-client";
 
+
 // বুকিং ডেটার ইন্টারফেস
 interface BookingItem {
   _id: string;
@@ -88,7 +89,7 @@ export default function DashboardContentPage() {
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Attended Workshops</p>
-            <h3 className="text-2xl font-black text-emerald-600 mt-1">0</h3>
+            <h3 className="text-2xl font-black text-emerald-600 mt-1">23</h3>
           </div>
           <div className="p-3 bg-emerald-50 text-emerald-500 rounded-xl"><House /></div>
         </div>
@@ -96,7 +97,7 @@ export default function DashboardContentPage() {
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Unread Alerts</p>
-            <h3 className="text-2xl font-black text-amber-500 mt-1">0</h3>
+            <h3 className="text-2xl font-black text-amber-500 mt-1">4</h3>
           </div>
           <div className="p-3 bg-amber-50 text-amber-500 rounded-xl"><Bell /></div>
         </div>
@@ -139,6 +140,12 @@ export default function DashboardContentPage() {
           )}
         </div>
       </div>
+
+
+
+
+
+ 
 
     </div>
   );

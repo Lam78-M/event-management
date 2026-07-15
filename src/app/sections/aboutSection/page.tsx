@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { 
   FiCheckCircle, 
   FiAward, 
@@ -10,8 +10,8 @@ import {
 } from "react-icons/fi";
 
 export default function AboutSection() {
-  // Framer Motion Animation Variants
-  const containerVariants = {
+  // 🎯 Framer Motion Animation Variants with strict Typing and Type Locking
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -19,21 +19,27 @@ export default function AboutSection() {
     }
   };
 
-  const fadeInUp = {
+  const fadeInUp: Variants = {
     hidden: { opacity: 0, y: 40 },
     visible: { 
       opacity: 1, 
       y: 0, 
-      transition: { duration: 0.6, ease: "easeOut" } 
+      transition: { 
+        duration: 0.6, 
+        ease: "easeOut" as const // 👈 as const যুক্ত করে টাইপ লক করা হয়েছে
+      } 
     }
   };
 
-  const imageScaleUp = {
+  const imageScaleUp: Variants = {
     hidden: { opacity: 0, scale: 0.9 },
     visible: { 
       opacity: 1, 
       scale: 1, 
-      transition: { duration: 0.8, ease: "easeOut" } 
+      transition: { 
+        duration: 0.8, 
+        ease: "easeOut" as const // 👈 as const যুক্ত করে টাইপ লক করা হয়েছে
+      } 
     }
   };
 
@@ -60,7 +66,7 @@ export default function AboutSection() {
   ];
 
   return (
-    <section className="relative overflow-hidden  bg-white py-20 lg:py-38 border-t border-slate-100">
+    <section className="relative overflow-hidden bg-white py-20 lg:py-38 border-t border-slate-100">
       {/* Background Soft Glow Effect */}
       <div className="absolute right-[-10%] bottom-0 h-96 w-96 rounded-full bg-[#C4E2F5]/20 blur-[130px] pointer-events-none" />
       
@@ -107,9 +113,6 @@ export default function AboutSection() {
                   </div>
                 </div>
               </div>
-
-              {/* Extra Secondary Floating Offset Element Grid */}
-           
             </div>
           </motion.div>
 

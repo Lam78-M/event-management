@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 // Dynamic Categories Array with metadata for rich UI representation
 const CATEGORIES = [
@@ -21,8 +21,8 @@ const CATEGORIES = [
   { id: "kids", label: "Kids & Family", emoji: "👶", total: 20, desc: "Amusement programs & child-friendly activities." },
 ];
 
-// Grid Entrance Motion Configuration Matrices
-const containerVariants = {
+// Grid Entrance Motion Configuration Matrices - Strictly Type-Casted
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -30,12 +30,16 @@ const containerVariants = {
   }
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 25 },
   show: { 
     opacity: 1, 
     y: 0, 
-    transition: { type: "spring", stiffness: 120, damping: 14 } 
+    transition: { 
+      type: "spring" as const, // 👈 Locked as spring literal type
+      stiffness: 120, 
+      damping: 14 
+    } 
   }
 };
 
@@ -52,7 +56,7 @@ export default function EventCategoriesPage() {
     <div className="min-h-screen bg-slate-50/60 py-20 px-4 md:px-8 relative overflow-hidden pt-40">
       
       {/* 🌌 Premium Ambient Glassmorphism Glow Blobs */}
-      <div className="absolute top-[-5%] right-[-5%] w-[600px] h-[600px] bg-[#C4E2F5]/40 rounded-full filter blur-[140px] pointer-events-none animate-pulse duration-4000" />
+      <div className="absolute top-[-5%] right-[-5%] w-[600px] h-[600px] bg-[#C4E2F5]/40 rounded-full filter blur-[140px] pointer-events-none animate-pulse" />
       <div className="absolute bottom-[-5%] left-[-5%] w-[550px] h-[550px] bg-[#4BB8FA]/20 rounded-full filter blur-[160px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -82,7 +86,7 @@ export default function EventCategoriesPage() {
             Interface with specialized pipelines tailored precisely to your preferred domain activations.
           </motion.p>
 
-          {/* 🔍 Dynamic Search Node to filter categories flawlessly */}
+          {/* 🔍 Dynamic Search Node */}
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -102,7 +106,7 @@ export default function EventCategoriesPage() {
           </motion.div>
         </div>
 
-        {/* 🎛️ Interactive Categories Isometric Responsive Grid */}
+        {/* 🎛️ Interactive Categories Grid */}
         <motion.div 
           variants={containerVariants}
           initial="hidden"
@@ -167,9 +171,9 @@ export default function EventCategoriesPage() {
                   </div>
 
                   {/* Bottom Pipeline Status Action Trigger */}
-                  <div className="mt-5 pt-4 border-t flex items-center justify-between z-10 transition-colors duration-300 border-dashed ${
-                    isSelected ? 'border-white/20' : 'border-[#C4E2F5]'
-                  }">
+                  <div className={`mt-5 pt-4 border-t flex items-center justify-between z-10 transition-colors duration-300 border-dashed ${
+                    isSelected ? "border-white/20" : "border-[#C4E2F5]"
+                  }`}>
                     <span className={`text-[10px] font-bold tracking-wider uppercase transition-colors ${
                       isSelected ? "text-white" : "text-[#2C5EAD]/60"
                     }`}>
@@ -189,7 +193,7 @@ export default function EventCategoriesPage() {
           </AnimatePresence>
         </motion.div>
 
-        {/* 🛠️ Safe Fallback Node for Query Overflow Empty Output */}
+        {/* 🛠️ Safe Fallback Node */}
         {filteredCategories.length === 0 && (
           <motion.div 
             initial={{ opacity: 0 }}

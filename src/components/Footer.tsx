@@ -44,10 +44,10 @@ export default function Footer() {
             {/* Social Icons using React Icons */}
             <div className="flex gap-3 pt-2">
               {[
-                { icon: <FiFacebook className="w-4 h-4" />, href: "#" },
-                { icon: <FiTwitter className="w-4 h-4" />, href: "#" },
-                { icon: <FiInstagram className="w-4 h-4" />, href: "#" },
-                { icon: <FiLinkedin className="w-4 h-4" />, href: "#" }
+                { icon: <FiFacebook className="w-4 h-4" />, href: "https://www.facebook.com/ayat.alabilam" },
+                { icon: <FiTwitter className="w-4 h-4" />, href: "https://www.twitter.com/ayatalabilam26" },
+               
+                { icon: <FiLinkedin className="w-4 h-4" />, href: "https://www.linkedin.com/in/ayat-alabi-lam" }
               ].map((social, index) => (
                 <a 
                   key={index} 

@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Calendar, MapPin, Clock, ArrowUpRight, ChevronLeft, ChevronRight, Magnifier, ArrowRotateLeft } from "@gravity-ui/icons";
 import Link from "next/link";
 import Image from "next/image";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+// Better Auth ক্লায়েন্ট হেল্পার ইমপোর্ট করো
+import { authClient } from "@/lib/auth-client"; 
 
 interface EventData {
   _id: string;
@@ -22,7 +24,8 @@ interface EventData {
   image: string;
 }
 
-const containerVariants = {
+// 🎯 টাইপ ডিফাইন এবং 'as const' ব্যবহার করে টাইপ লকিং ফিক্স করা হলো
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -30,12 +33,16 @@ const containerVariants = {
   }
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { 
     opacity: 1, 
     y: 0, 
-    transition: { type: "spring", stiffness: 120, damping: 18 } 
+    transition: { 
+      type: "spring" as const, // 👈 as const যুক্ত করা হয়েছে
+      stiffness: 120, 
+      damping: 18 
+    } 
   }
 };
 
@@ -50,7 +57,13 @@ export default function EventsExplorePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedLocationType, setSelectedLocationType] = useState<string>("");
 
+  // 🛡️ Better Auth সেশন স্টেট
+  const { data: session, isPending } = authClient.useSession();
+
   useEffect(() => {
+    // সেশন পেন্ডিং থাকলে অথবা সেশন না থাকলে ডাটা ফেচ করার দরকার নেই
+    if (isPending || !session) return;
+
     const fetchEvents = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/eventmanage");
@@ -65,9 +78,9 @@ export default function EventsExplorePage() {
     };
 
     fetchEvents();
-  }, []);
+  }, [session, isPending]);
 
-  // 🎛️ ইউনিক ক্যাটাগরি লিস্ট ডাইনামিকালি বের করা (ফিল্টার ড্রপডাউনের জন্য)
+  // 🎛️ ইউনিক ক্যাটাগরি লিস্ট
   const categories = Array.from(new Set(events.map((e) => e.category)));
 
   // ⚙️ সার্চ এবং ফিল্টারিং লজিক প্রসেস
@@ -90,7 +103,7 @@ export default function EventsExplorePage() {
     toast.info("Search node filters reset successfully.");
   };
 
-  // 📄 পেজিনেশন হিসাব-নিকাশ (ফিল্টার করা ডাটার ওপর ভিত্তি করে)
+  // 📄 পেজিনেশন হিসাব-নিকাশ
   const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
   const indexOfLastEvent = currentPage * itemsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - itemsPerPage;
@@ -101,9 +114,8 @@ export default function EventsExplorePage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // পেজ নম্বর জেনারেটর
   useEffect(() => {
-    setCurrentPage(1); // সার্চ বা ফিল্টার চেঞ্জ হলে পেজ ১-এ নিয়ে যাবে
+    setCurrentPage(1);
   }, [searchQuery, selectedCategory, selectedLocationType]);
 
   const getPaginationRange = () => {
@@ -143,13 +155,57 @@ export default function EventsExplorePage() {
     return [];
   };
 
+  // 🕒 ১. লোডিং স্টেট
+  if (isPending) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50/50">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#2C5EAD]" />
+      </div>
+    );
+  }
+
+  // 🔒 ২. লগইন না থাকলে প্রটেক্টেড ভিউ
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-slate-50/50 py-16 px-4 md:px-8 relative overflow-hidden pt-40 flex items-center justify-center">
+        {/* Background Blurs */}
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#C4E2F5]/20 rounded-full filter blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#4BB8FA]/10 rounded-full filter blur-[150px] pointer-events-none" />
+
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="max-w-md w-full bg-white/80 backdrop-blur-md rounded-3xl border border-[#C4E2F5] p-8 text-center shadow-xl relative z-10 space-y-6"
+        >
+          <div className="text-6xl">🔒</div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-[#2C5EAD]">Access Restricted</h2>
+            <p className="text-sm font-semibold text-slate-500 leading-relaxed">
+              To explore, search, and interface with live synchronized event matrices, you need to sign in first.
+            </p>
+          </div>
+          
+          <div className="pt-2">
+            <Link href="/login">
+              <button className="w-full py-3 bg-[#2C5EAD] hover:bg-[#1591DC] text-white font-black rounded-xl text-sm transition-all duration-300 shadow-md hover:shadow-lg">
+                Proceed to Login
+              </button>
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // 🔓 ৩. লগইন করা থাকলে অরিজিনাল ভিউ
   return (
     <div className="min-h-screen bg-slate-50/50 py-16 px-4 md:px-8 relative overflow-hidden pt-40 text-left">
       <ToastContainer position="top-center" autoClose={2500} />
 
       {/* Background Blur Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#C4E2F5]/20 rounded-full filter blur-[120px] pointer-events-none will-change-transform" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#4BB8FA]/10 rounded-full filter blur-[150px] pointer-events-none will-change-transform" />
+      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#C4E2F5]/20 rounded-full filter blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#4BB8FA]/10 rounded-full filter blur-[150px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         
@@ -169,7 +225,7 @@ export default function EventsExplorePage() {
               transition={{ delay: 0.05 }}
               className="text-sm font-semibold text-[#1591DC] mt-1"
             >
-              Discover, sync, and interface with global live activations.
+              Welcome back, {session.user?.name || "Explorer"}! Discover and sync global live activations.
             </motion.p>
           </div>
           <motion.div 
@@ -183,7 +239,7 @@ export default function EventsExplorePage() {
 
         {/* 🔮 MULTI-SEARCH SEARCH DECK PANEL */}
         <div className="mb-12 bg-white/70 backdrop-blur-md rounded-3xl border border-[#C4E2F5] p-5 md:p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-          {/* 1. Keyword Search Text Box */}
+          {/* 1. Keyword Search */}
           <div className="flex flex-col space-y-2">
             <label className="text-xs font-black text-[#2C5EAD] tracking-wide uppercase">Search Event</label>
             <div className="relative flex items-center">
@@ -259,7 +315,7 @@ export default function EventsExplorePage() {
             animate={{ opacity: 1 }}
             className="text-center py-20 bg-white/60 backdrop-blur-md rounded-3xl border border-[#C4E2F5] shadow-inner"
           >
-            <p className="text-[#1591DC] font-black text-lg">No synchronized event matrices match your criteria.</p>
+            <p className="text-[#1591DC] font-black text-lg">No active event matrices match your criteria.</p>
             <button 
               onClick={handleResetFilters} 
               className="mt-4 px-5 py-2.5 bg-[#2C5EAD] text-white text-xs font-bold rounded-xl shadow-md hover:bg-[#1591DC] transition-colors"
@@ -280,7 +336,7 @@ export default function EventsExplorePage() {
                 <motion.div
                   key={event._id}
                   variants={cardVariants}
-                  whileHover={{ y: -6, transition: { duration: 0.2, ease: "easeInOut" } }}
+                  whileHover={{ y: -6, transition: { duration: 0.2, ease: "easeInOut" as const } }} // 👈 as const যুক্ত করা হয়েছে
                   className="bg-white/80 backdrop-blur-md rounded-3xl border border-[#C4E2F5] shadow-sm hover:shadow-xl hover:shadow-[#4BB8FA]/10 overflow-hidden flex flex-col group transition-all duration-300"
                 >
                   <div className="h-48 w-full overflow-hidden relative bg-slate-100">

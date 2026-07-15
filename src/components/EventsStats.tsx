@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Calendar, MapPin, Clock, ArrowUpRight, ChevronLeft, ChevronRight } from "@gravity-ui/icons";
 import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Image from "next/image";
 
 interface EventData {
   _id: string;
@@ -21,7 +22,8 @@ interface EventData {
   image: string;
 }
 
-const containerVariants = {
+// 🎯 Framer Motion Animation Variants with strict Typing and Type Locking
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -29,12 +31,16 @@ const containerVariants = {
   }
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   show: { 
     opacity: 1, 
     y: 0, 
-    transition: { type: "spring", stiffness: 100, damping: 15 } 
+    transition: { 
+      type: "spring" as const, // 👈 as const যুক্ত করে টাইপ লক করা হয়েছে
+      stiffness: 100, 
+      damping: 15 
+    } 
   }
 };
 
@@ -180,7 +186,7 @@ export default function EventsStats() {
               animate="show"
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
             >
-              {currentEvents.slice(0,4).map((event) => (
+              {currentEvents.map((event) => (
                 <motion.div
                   key={event._id}
                   variants={cardVariants}
@@ -197,10 +203,12 @@ export default function EventsStats() {
                     </div>
 
                     {event.image ? (
-                      <img 
+                      <Image 
                         src={event.image} 
                         alt={event.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" 
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out" 
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-tr from-[#C4E2F5]/50 to-[#4BB8FA]/30 text-[#1591DC] font-bold text-sm">
@@ -236,7 +244,7 @@ export default function EventsStats() {
                         </span>
                       </div>
 
-                      <Link href={`/eventManage/${event._id}`}>
+                      <Link href={`/eventManage`}>
                         <motion.div 
                           whileTap={{ scale: 0.95 }}
                           className="h-9 w-9 bg-[#C4E2F5]/60 group-hover:bg-[#2C5EAD] text-[#2C5EAD] group-hover:text-white rounded-xl flex items-center justify-center shadow-sm transition-all duration-300 cursor-pointer"
