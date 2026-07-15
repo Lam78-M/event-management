@@ -30,13 +30,13 @@ export default function DashboardContentPage() {
 
   const fetchDashboardData = async () => {
     try {
-      const userRes = await fetch("http://localhost:5000/api/users");
+      const userRes = await fetch(`${process.env.NEXT_SERVER_URL}/api/users`);
       if (userRes.ok) {
         const userData = await userRes.json();
         setUsers(userData);
       }
 
-      const eventRes = await fetch("http://localhost:5000/api/events/count");
+      const eventRes = await fetch(`${process.env.NEXT_SERVER_URL}/api/events/count`);
       if (eventRes.ok) {
         const eventData = await eventRes.json();
         setTotalEvents(eventData.count);

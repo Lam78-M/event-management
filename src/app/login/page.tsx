@@ -77,8 +77,8 @@ export default function LoginPage() {
             <div className="bg-white/80 p-2.5 rounded-xl border border-slate-100">
               <span className="block text-[10px] font-black text-[#1591DC] uppercase tracking-wide mb-1">👑 Admin Dashboard</span>
               <div className="flex flex-col gap-0.5">
-                <p>Email:<code className="bg-slate-100 text-[#2C5EAD] px-1.5 py-0.5 rounded font-mono text-[16px]">admin@gmail.com </code></p>
-                <p>Pass:  <code className="bg-slate-100 text-[#2C5EAD] px-1.5 py-0.5 rounded font-mono text-[16px] ">User123##</code></p>
+                <p>Email:<code className="bg-slate-100 text-[#2C5EAD] px-1.5 py-0.5 rounded font-mono ">admin@gmail.com </code></p>
+                <p>Pass:  <code className="bg-slate-100 text-[#2C5EAD] px-1.5 py-0.5 rounded font-mono  ">User123##</code></p>
               </div>
             </div>
 

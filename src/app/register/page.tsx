@@ -55,8 +55,11 @@ export default function RegisterPage() {
 
     setLoading(true);
 
-    // 💡 SOLVED: If imageUrl is empty, it will fall back to this default premium avatar
-    const finalImageUrl = imageUrl.trim() || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80";
+    // 🎯 সলিউশন: একদম স্ট্যান্ডার্ড গ্রে জেন্ডার-লেস ডিফল্ট আইকন সেট করা হলো
+    const fallbackDefaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+    
+    // ইউজার যদি ইনপুট ফিল্ড ফাঁকা রাখে তবে স্বয়ংক্রিয়ভাবে ডিফল্ট আইকনটি সেট হবে
+    const finalImageUrl = imageUrl.trim() !== "" ? imageUrl.trim() : fallbackDefaultAvatar;
 
     await authClient.signUp.email({
       email: email.trim().toLowerCase(),

@@ -46,7 +46,7 @@ export default function EventDetailedDisplayPortal() {
 
    const fetchSingleEventNode = async () => {
   try {
-    const res = await fetch(`http://localhost:5000/api/eventmanage`, {
+    const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/eventmanage`, {
       method: "GET", // মেথড বলে দেওয়া ভালো
       cache: "no-store", // 👈 Next.js ক্যাশিং বন্ধ করবে যেন হেডার প্রতিবার ফ্রেশ যায়
       headers: {
@@ -84,7 +84,7 @@ export default function EventDetailedDisplayPortal() {
 
     setBookingLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/mybookings", {
+      const response = await fetch(`${process.env.NEXT_SERVER_URL}/api/mybookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

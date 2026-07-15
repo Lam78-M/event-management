@@ -31,7 +31,7 @@ export default function StaticBookingsDisplay() {
         // যেন ব্যাকএন্ড অন্তত ডাটাটা পাঠায়।
         const testEmail = "admin@gmail.com"; 
         
-        const res = await fetch(`http://localhost:5000/api/mybookings?email=${testEmail}`);
+        const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/mybookings?email=${testEmail}`);
         if (!res.ok) throw new Error("Database network tunnel failure.");
         
         const data = await res.json();

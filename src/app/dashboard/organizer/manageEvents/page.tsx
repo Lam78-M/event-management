@@ -34,7 +34,7 @@ export default function OrganizerEventsManagement() {
   // ডাটাবেস থেকে ইভেন্ট ডাটা লোড করা
   const fetchOrganizerEvents = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/eventmanage");
+      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/eventmanage`);
       if (!res.ok) throw new Error("Failed to capture organizer event stream.");
       const data = await res.json();
       setEvents(data);
@@ -61,7 +61,7 @@ export default function OrganizerEventsManagement() {
     setIsDeleting(true);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/eventmanage/${selectedEvent.id}`, {
+      const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/eventmanage/${selectedEvent.id}`, {
         method: "DELETE",
       });
       

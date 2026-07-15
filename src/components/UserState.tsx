@@ -36,7 +36,7 @@ export default function UserState() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/users");
+        const res = await fetch(`${process.env.NEXT_SERVER_URL}/api/users`);
         if (res.ok) {
           const data = await res.json();
           setUsers(data);

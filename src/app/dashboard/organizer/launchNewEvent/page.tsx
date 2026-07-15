@@ -69,7 +69,7 @@ export default function CreateEventForm() {
     
     try {
       // 🚀 BACKEND PIPELINE COUPLING
-      const response = await fetch("http://localhost:5000/api/eventmanage", {
+      const response = await fetch(`${process.env.NEXT_SERVER_URL}/api/eventmanage`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
